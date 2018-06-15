@@ -1,0 +1,25 @@
+{
+  "name": "node-xlsx-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yatyricky/node-xlsx-helper.git"
+  },
+  "keywords": [
+    "node-xlsx"
+  ],
+  "author": "Nef.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yatyricky/node-xlsx-helper/issues"
+  },
+  "homepage": "https://github.com/yatyricky/node-xlsx-helper#readme",
+  "dependencies": {
+    "node-xlsx": "^0.12.0"
+  }
+}
