@@ -30,22 +30,30 @@ const parseRef = (ref) => {
     };
 };
 
-const compromisedReturn = (any, num) => {
-    if (!any) {
-        if (num === true) {
-            return 0;
-        } else {
-            return "";
-        }
+const safeReturn = (arr, row, col, dataType) => {
+    let res;
+    if (arr.length <= row || row < 0) {
+        console.warn(`[WARN]Row number out of bounds, rows: ${arr.length}, requested: ${row}(${row + 1})`);
+        res = undefined;
     } else {
-        if (isNaN(any)) {
-            if (num === true) {
-                return 0;
-            } else {
-                return any;
-            }
+        if (arr[row].length <= col || col < 0) {
+            console.warn(`[WARN]Column number out of bounds, columns: ${arr[row].length}, requested: ${col}(${number2Col(col + 1)})`);
+            res = undefined;
         } else {
-            return parseFloat(any);
+            res = arr[row][col];
+        }
+    }
+    if (dataType === "number") {
+        let parsed = parseFloat(res);
+        if (isNaN(parsed)) {
+            parsed = 0;
+        }
+        return parsed;
+    } else {
+        if (!res) {
+            return "";
+        } else {
+            return res;
         }
     }
 };
@@ -57,23 +65,23 @@ module.exports = (fpath) => {
         const sheet = raw[i];
         sheets[sheet.name] = {
             data: sheet.data,
-            cell: (ref, enforceNumber = false) => {
+            cell: (ref, dataType = "string") => {
                 const index = parseRef(ref);
-                return compromisedReturn(sheet.data[index.row][index.col], enforceNumber);
+                return safeReturn(sheet.data, index.row, index.col, dataType);
             },
-            cells: (ref, enforceNumber = false) => {
+            cells: (ref, dataType = "string") => {
                 const tokens = ref.split(":");
                 const start = parseRef(tokens[0]);
                 const end = parseRef(tokens[1]);
                 const ret = [];
                 for (let i = start.row; i <= end.row; i++) {
                     for (let j = start.col; j <= end.col; j++) {
-                        ret.push(compromisedReturn(sheet.data[i][j], enforceNumber));
+                        ret.push(safeReturn(sheet.data, i, j, dataType));
                     }
                 }
                 return ret;
             },
-            lookup: (col, val, valcol, enforceNumber = false) => {
+            lookup: (col, val, valcol, dataType = "string") => {
                 const index = col2Number(col) - 1;
                 let f = -1;
                 for (let j = 0; j < sheet.data.length && f === -1; j++) {
@@ -82,20 +90,43 @@ module.exports = (fpath) => {
                         f = j;
                     }
                 }
-                return compromisedReturn(sheet.data[f][col2Number(valcol) - 1], enforceNumber);
+                return safeReturn(sheet.data, f, col2Number(valcol) - 1, dataType);
             },
-            indexOfHeader: (header) => {
+            matchCol: (row, header) => {
+                row -= 1;
+                if (row >= sheet.data.length || row < 0) {
+                    console.warn(`[WARN]Row number out of bounds, rows: ${sheet.data.length}, requested: ${row}`);
+                    return "";
+                }
                 let f = -1;
-                for (let j = 0; j < sheet.data[0].length && f === -1; j++) {
-                    const element = sheet.data[0][j];
+                for (let j = 0; j < sheet.data[row].length && f === -1; j++) {
+                    const element = sheet.data[row][j];
                     if (element == header) {
                         f = j;
                     }
                 }
                 if (f === -1) {
-                    return undefined;
+                    console.warn(`[WARN]Unable to find ${header} in row ${row}(${row + 1})`);
+                    return "";
                 } else {
                     return number2Col(f + 1);
+                }
+            },
+            matchRow: (col, header) => {
+                let column = col2Number(col) - 1;
+                let f = -1;
+                for (let j = 0; j < sheet.data.length && f === -1; j++) {
+                    if (sheet.data[j].length > column) {
+                        if (sheet.data[j][column] == header) {
+                            f = j;
+                        }
+                    }
+                }
+                if (f === -1) {
+                    console.warn(`[WARN]Unable to find ${header} in column ${column}(${number2Col(col + 1)})`);
+                    return -1;
+                } else {
+                    return f + 1;
                 }
             }
         };
