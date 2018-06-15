@@ -19,6 +19,17 @@ const number2Col = (num) => {
     return sb;
 };
 
+const parseRef = (ref) => {
+    const regex = /([A-Z]+)([1-9][0-9]*)/g;
+    const match = regex.exec(ref);
+    const row = parseInt(match[2]);
+    const col = col2Number(match[1]);
+    return {
+        row: row - 1,
+        col: col - 1
+    };
+};
+
 const compromisedReturn = (any, num) => {
     if (!any) {
         if (num === true) {
@@ -47,11 +58,20 @@ module.exports = (fpath) => {
         sheets[sheet.name] = {
             data: sheet.data,
             cell: (ref, enforceNumber = false) => {
-                const regex = /([A-Z]+)([1-9][0-9]*)/g;
-                const match = regex.exec(ref);
-                const row = parseInt(match[2]);
-                const col = col2Number(match[1]);
-                return compromisedReturn(sheet.data[row - 1][col - 1], enforceNumber);
+                const index = parseRef(ref);
+                return compromisedReturn(sheet.data[index.row][index.col], enforceNumber);
+            },
+            cells: (ref, enforceNumber = false) => {
+                const tokens = ref.split(":");
+                const start = parseRef(tokens[0]);
+                const end = parseRef(tokens[1]);
+                const ret = [];
+                for (let i = start.row; i <= end.row; i++) {
+                    for (let j = start.col; j <= end.col; j++) {
+                        ret.push(compromisedReturn(sheet.data[i][j], enforceNumber));
+                    }
+                }
+                return ret;
             },
             lookup: (col, val, valcol, enforceNumber = false) => {
                 const index = col2Number(col) - 1;
