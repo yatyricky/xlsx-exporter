@@ -1,4 +1,5 @@
 const xlsx = require("node-xlsx").default;
+const assert = require("assert");
 
 const col2Number = (col) => {
     let num = 0;
@@ -66,10 +67,12 @@ module.exports = (fpath) => {
         sheets[sheet.name] = {
             data: sheet.data,
             cell: (ref, dataType = "string") => {
+                assert.strictEqual(dataType == "number" || dataType == "string", true);
                 const index = parseRef(ref);
                 return safeReturn(sheet.data, index.row, index.col, dataType);
             },
             cells: (ref, dataType = "string") => {
+                assert.strictEqual(dataType == "number" || dataType == "string", true);
                 const tokens = ref.split(":");
                 const start = parseRef(tokens[0]);
                 const end = parseRef(tokens[1]);
@@ -82,6 +85,7 @@ module.exports = (fpath) => {
                 return ret;
             },
             lookup: (col, val, valcol, dataType = "string") => {
+                assert.strictEqual(dataType == "number" || dataType == "string", true);
                 const index = col2Number(col) - 1;
                 let f = -1;
                 for (let j = 0; j < sheet.data.length && f === -1; j++) {
