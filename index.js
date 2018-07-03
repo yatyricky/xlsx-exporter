@@ -34,11 +34,11 @@ const parseRef = (ref) => {
 const safeReturn = (arr, row, col, dataType) => {
     let res;
     if (arr.length <= row || row < 0) {
-        console.warn(`[WARN]Row number out of bounds, rows: ${arr.length}, requested: ${row}(${row + 1})`);
+        // console.warn(`[WARN]Row number out of bounds, rows: ${arr.length}, requested: ${row}(${row + 1})`);
         res = undefined;
     } else {
         if (arr[row].length <= col || col < 0) {
-            console.warn(`[WARN]Column number out of bounds, columns: ${arr[row].length}, requested: ${col}(${number2Col(col + 1)})`);
+            // console.warn(`[WARN]Column number out of bounds, columns: ${arr[row].length}, requested: ${col}(${number2Col(col + 1)})`);
             res = undefined;
         } else {
             res = arr[row][col];
@@ -99,7 +99,7 @@ module.exports = (fpath) => {
             matchCol: (row, header) => {
                 row -= 1;
                 if (row >= sheet.data.length || row < 0) {
-                    console.warn(`[WARN]Row number out of bounds, rows: ${sheet.data.length}, requested: ${row}`);
+                    // console.warn(`[WARN]Row number out of bounds, rows: ${sheet.data.length}, requested: ${row}`);
                     return "";
                 }
                 let f = -1;
@@ -110,7 +110,7 @@ module.exports = (fpath) => {
                     }
                 }
                 if (f === -1) {
-                    console.warn(`[WARN]Unable to find ${header} in row ${row}(${row + 1})`);
+                    // console.warn(`[WARN]Unable to find ${header} in row ${row}(${row + 1})`);
                     return "";
                 } else {
                     return number2Col(f + 1);
@@ -127,7 +127,7 @@ module.exports = (fpath) => {
                     }
                 }
                 if (f === -1) {
-                    console.warn(`[WARN]Unable to find ${header} in column ${column}(${number2Col(col + 1)})`);
+                    // console.warn(`[WARN]Unable to find ${header} in column ${column}(${number2Col(col + 1)})`);
                     return -1;
                 } else {
                     return f + 1;
