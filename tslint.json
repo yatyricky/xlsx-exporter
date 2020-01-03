@@ -1,0 +1,26 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "no-unused-variable": {
+            "severity": "warn"
+        },
+        "max-line-length": false,
+        "object-literal-sort-keys": false,
+        "typedef": [
+            true,
+            "call-signature",
+            "property-declaration"
+        ],
+        "no-any": [
+            true,
+            {
+                "ignore-rest-args": true
+            }
+        ]
+    },
+    "rulesDirectory": []
+}
