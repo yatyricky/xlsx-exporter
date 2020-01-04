@@ -14,4 +14,17 @@ export default class Logger {
     public static error(...params: any[]): void {
         console.log("❌", ...params);
     }
+
+    public static duplicate(msg: string): void {
+        Logger.error("[DUPLICATE]" + msg);
+    }
+
+    public static unknownType(msg: string): void {
+        Logger.error("[UNKNOWN_TYPE]" + msg);
+    }
+
+    public static unknownRule(msg: string): void {
+        Logger.error("[UNKNOWN_RULE]" + msg);
+    }
+
 }

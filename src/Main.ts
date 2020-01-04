@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import xlsx = require("xlsx");
 import Logger from "./Common/Logger";
+import WorkbookParser from "./Components/WorkbookParser";
 
 const { readFile, utils } = xlsx;
 const { encode_row, encode_cell, encode_col } = utils;
@@ -22,28 +23,17 @@ export function SafeGet(sheet: xlsx.WorkSheet, r: number, c: number): string {
     return v.toString();
 }
 
+export function EncodeCell(r: number, c: number): string {
+    return encode_cell({ r, c });
+}
+
 const outDir = path.join("src", "Game", "Configs");
 
 // -- start of workbook
 
-const filePath = "./configs/Unit.xlsx";
+const filePath = "./excel/Unit.xlsx";
 
-/** @type {IConfigObject} */
-const configObj = {
-    enums: [],
-    data: [],
-    other: {},
-};
-
-const wb = readFile(filePath);
-/** @type {string[]} */
-const enumSheets = [];
-/** @type {string[]} */
-const dataSheets = [];
-/** @type {string[]} */
-const wbEnums = [];
-/** @type {{ [key: string]: Enum }} */
-const enumByName = {};
+const xx = new WorkbookParser(readFile(filePath), "Unit");
 
 // get sheets
 for (const e of dataSheets) {
@@ -56,35 +46,7 @@ for (const e of dataSheets) {
     let col = 0;
     while (true) {
         // key
-        const key = g(sheet, 0, col);
-        if (key.length === 0) {
-            break;
-        }
-        if (key.charCodeAt(0) === 35) {
-            col++;
-            continue;
-        }
-        const ictKey = key;
-        // type
-        let type = g(sheet, 1, col);
-        if (type.length === 0) {
-            type = "string";
-        }
-        const primTypeIndex = primTypes.indexOf(type);
-        const wbEnumIndex = wbEnums.indexOf(type);
-        const isPrimTypeIndex = primTypeIndex !== -1;
-        const iswbEnumIndex = wbEnumIndex !== -1;
-        if (!isPrimTypeIndex && !iswbEnumIndex) {
-            throw new Error(`Unknown type @${filePath}[${e}]:${encode_cell({ r: 1, c: col })}`);
-        }
-        if (isPrimTypeIndex && iswbEnumIndex) {
-            throw new Error(`Type matches multiple types @${filePath}[${e}]:${encode_cell({ r: 1, c: col })}`);
-        }
-        /** @type {IColumnTypeFieldType} */
-        const ictType = {
-            fType: type,
-            fEnum: isPrimTypeIndex ? undefined : enumByName[type],
-        };
+
         // rules
         const rules = g(sheet, 2, col);
         let ictIndex = false;
@@ -217,7 +179,7 @@ const first = configObj.data[0].data;
 
 for (const e of configObj.data) {
     if (e.index) {
-        
+
     }
 }
 

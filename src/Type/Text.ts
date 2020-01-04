@@ -1,6 +1,6 @@
 import IType from "./Type";
 
-export default class String implements IType<string> {
+export default class Text implements IType<string> {
     public default(): string {
         return "";
     }

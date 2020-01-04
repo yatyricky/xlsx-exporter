@@ -1,21 +1,24 @@
 import { Indent } from "../Const";
+import IRule from "../Rule/Rule";
 import IType, { JSTypes } from "../Type/Type";
 import IFieldDefine from "./FieldDefine";
-import IRuleType from "./RuleType";
 
 interface ISheetFieldRule<T extends JSTypes> {
     define: IFieldDefine<T>;
-    rule: IRuleType;
-    default: T;
+    rules: IRule[];
 }
 
-export default class SheetDataType implements IType<object> {
+export default class WorksheetParser implements IType<object> {
     public name: string;
-    public fieldDefines: Array<ISheetFieldRule<JSTypes>>;
+    public fieldDefineRules: Array<ISheetFieldRule<JSTypes>>;
 
     public constructor(name: string) {
         this.name = name;
-        this.fieldDefines = [];
+        this.fieldDefineRules = [];
+    }
+
+    public add(fieldRule: ISheetFieldRule<JSTypes>): void {
+        this.fieldDefineRules.push(fieldRule);
     }
 
     public default(): object {
@@ -32,7 +35,7 @@ export default class SheetDataType implements IType<object> {
 
     public tsDef(): string {
         let sb = `export interface ${this.name} {\n`;
-        for (const e of this.fieldDefines) {
+        for (const e of this.fieldDefineRules) {
             sb += `${Indent}${e.define.name}: ${e.define.type.tsName()}\n`;
         }
         sb += "}";
