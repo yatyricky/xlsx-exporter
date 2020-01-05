@@ -1,7 +1,10 @@
-import Rule from "./Rule";
+import Rule, { RuleType } from "./Rule";
 
 export default class RUnique extends Rule {
-    public execute(): void {
-        throw new Error("Method not implemented.");
+    public type: RuleType = RuleType.Unique;
+
+    public constructor() {
+        super();
     }
+
 }

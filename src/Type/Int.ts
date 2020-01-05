@@ -1,6 +1,8 @@
-import IType from "./Type";
+import IType, { TypeCategory } from "./TypeBase";
 
 export default class Int implements IType<number> {
+
+    public category: TypeCategory = TypeCategory.Single;
     public default(): number {
         return 0;
     }

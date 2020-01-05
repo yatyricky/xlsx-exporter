@@ -8,5 +8,8 @@
         "sourceMap": true,
         "module": "commonjs",
         "outDir": "dist"
-    }
+    },
+    "exclude": [
+        "excel"
+    ]
 }

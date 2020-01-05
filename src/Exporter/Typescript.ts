@@ -1,4 +1,5 @@
-import IType, { JSTypes } from "../Type";
+import { JSTypes } from "../Common/TypeDef";
+import IType from "../Type/TypeBase";
 import ILang from "./Lang";
 
 export default class Typescript implements ILang {

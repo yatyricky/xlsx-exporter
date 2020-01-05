@@ -1,6 +1,7 @@
 import { IMap } from "../Common/TypeDef";
 import { Indent } from "../Const";
-import IType from "./Type";
+import Int from "./Int";
+import IType, { TypeCategory } from "./TypeBase";
 
 interface IEnumItem {
     name: string;
@@ -8,9 +9,12 @@ interface IEnumItem {
 }
 
 export default class Enum implements IType<string> {
+
+    public category: TypeCategory = TypeCategory.Single;
     public name: string;
     public nameMap: IMap<boolean>;
     public items: IEnumItem[];
+    private intTest: IType<number>;
 
     /**
      * @param {string} name
@@ -19,6 +23,7 @@ export default class Enum implements IType<string> {
         this.name = name;
         this.nameMap = {};
         this.items = [];
+        this.intTest = new Int();
     }
 
     public default(): string {
@@ -38,7 +43,7 @@ export default class Enum implements IType<string> {
 
     public add(name: string, value: string): void {
         let val: number;
-        if (value === "") {
+        if (!this.intTest.match(value)) {
             val = this.items.length;
         } else {
             val = parseInt(value, 10);

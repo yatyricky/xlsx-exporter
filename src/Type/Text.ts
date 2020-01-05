@@ -1,6 +1,8 @@
-import IType from "./Type";
+import IType, { TypeCategory } from "./TypeBase";
 
 export default class Text implements IType<string> {
+
+    public category: TypeCategory = TypeCategory.Single;
     public default(): string {
         return "";
     }

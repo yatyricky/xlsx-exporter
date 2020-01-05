@@ -19,6 +19,10 @@ export default class Logger {
         Logger.error("[DUPLICATE]" + msg);
     }
 
+    public static empty(msg: string): void {
+        Logger.error("[IS_EMPTY]" + msg);
+    }
+
     public static unknownType(msg: string): void {
         Logger.error("[UNKNOWN_TYPE]" + msg);
     }

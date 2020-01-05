@@ -1,6 +1,8 @@
-import IType from "./Type";
+import IType, { TypeCategory } from "./TypeBase";
 
 export default class Bool implements IType<boolean> {
+
+    public category: TypeCategory = TypeCategory.Single;
 
     public match(strrep: string): boolean {
         const lc = strrep.toLowerCase();

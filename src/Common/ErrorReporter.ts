@@ -5,8 +5,8 @@ export default abstract class ErrorReporter {
         this.error = [];
     }
 
-    public getErrors(): string {
-        const ret = this.error.join(";");
+    public getErrors(): string[] {
+        const ret = this.error.slice();
         this.error.length = 0;
         return ret;
     }

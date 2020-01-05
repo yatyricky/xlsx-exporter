@@ -1,4 +1,5 @@
-import IType, { JSTypes } from "../Type";
+import { JSTypes } from "../Common/TypeDef";
+import IType from "../Type/TypeBase";
 
 export default interface ILang {
     defaultString(type: IType<JSTypes>): string;
