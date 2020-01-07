@@ -7,7 +7,7 @@
         "strict": true,
         "sourceMap": true,
         "module": "commonjs",
-        "outDir": "dist"
+        "outDir": "js"
     },
     "exclude": [
         "excel"

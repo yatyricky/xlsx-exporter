@@ -1,3 +1,3 @@
-Remove-Item -Recurse .\dist\*
+Remove-Item -Recurse .\js\*
 tsc
-node .\dist\Main.js
+node .\js\Main.js
