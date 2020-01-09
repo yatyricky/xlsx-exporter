@@ -129,6 +129,7 @@ Data starts from the **5th** row.
 # Roadmap
 
 - [x] Core
+- [ ] Vertical Config
 - [ ] Cli tool
 - [ ] Lua
 - [ ] vJass and Zinc
