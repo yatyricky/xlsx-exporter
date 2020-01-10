@@ -45,9 +45,9 @@ export default class WorkbookParser {
             const sheet = this.sheets[i];
             let name: string;
             if (i === 0) {
-                name = `${this.name}Config`;
+                name = `${this.name}`;
             } else {
-                name = `${this.name}${sheet.name}Config`;
+                name = `${this.name}${sheet.name}`;
             }
             const iName = "I" + name;
             let configType: string;

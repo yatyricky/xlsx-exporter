@@ -11,7 +11,8 @@
             "program": "${file}",
             "skipFiles": [
                 "<node_internals>/**"
-            ]
+            ],
+            "runtimeArgs": ["example/excel", "example/exported"]
         }
     ]
 }

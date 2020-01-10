@@ -10,6 +10,6 @@
         "outDir": "js"
     },
     "exclude": [
-        "excel"
+        "example/exported"
     ]
 }

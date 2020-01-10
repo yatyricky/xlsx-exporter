@@ -130,6 +130,6 @@ Data starts from the **5th** row.
 
 - [x] Core
 - [ ] Vertical Config
-- [ ] Cli tool
+- [x] Cli tool
 - [ ] Lua
 - [ ] vJass and Zinc
