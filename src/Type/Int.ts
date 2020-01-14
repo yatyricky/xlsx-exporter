@@ -26,4 +26,41 @@ export default class Int implements IType<number> {
     public tsVal(value: number): string {
         return value.toString();
     }
+
+    public luaDef(): string {
+        return "";
+    }
+
+    public luaName(): string {
+        return "number";
+    }
+
+    public luaVal(value: number): string {
+        return value.toString();
+    }
+
+    public zincDef(): string {
+        return "";
+    }
+
+    public zincName(): string {
+        return "integer";
+    }
+
+    public zincVal(value: number): string {
+        return value.toString();
+    }
+
+    public wurstDef(): string {
+        return "";
+    }
+
+    public wurstName(): string {
+        return "int";
+    }
+
+    public wurstVal(value: number): string {
+        return value.toString();
+    }
+
 }

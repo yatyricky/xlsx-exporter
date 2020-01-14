@@ -27,4 +27,40 @@ export default class Text implements IType<string> {
         return `"${value}"`;
     }
 
+    public luaDef(): string {
+        return "";
+    }
+
+    public luaName(): string {
+        return "string";
+    }
+
+    public luaVal(value: string): string {
+        return `"${value}"`;
+    }
+
+    public zincDef(): string {
+        return "";
+    }
+
+    public zincName(): string {
+        return "string";
+    }
+
+    public zincVal(value: string): string {
+        return `"${value}"`;
+    }
+
+    public wurstDef(): string {
+        return "";
+    }
+
+    public wurstName(): string {
+        return "string";
+    }
+
+    public wurstVal(value: string): string {
+        return `"${value}"`;
+    }
+
 }

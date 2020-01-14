@@ -26,4 +26,41 @@ export default class Float implements IType<number> {
     public tsVal(value: number): string {
         return value.toString();
     }
+
+    public luaDef(): string {
+        return "";
+    }
+
+    public luaName(): string {
+        return "number";
+    }
+
+    public luaVal(value: number): string {
+        return value.toString();
+    }
+
+    public zincDef(): string {
+        return "";
+    }
+
+    public zincName(): string {
+        return "real";
+    }
+
+    public zincVal(value: number): string {
+        return value.toString();
+    }
+
+    public wurstDef(): string {
+        return "";
+    }
+
+    public wurstName(): string {
+        return "real";
+    }
+
+    public wurstVal(value: number): string {
+        return value.toString();
+    }
+
 }

@@ -4,41 +4,54 @@ import xlsx = require("xlsx");
 import Logger from "./Common/Logger";
 import WorkbookParser from "./Component/WorkbookParser";
 
+type Langs = "ts" | "lua" | "zinc" | "wurst";
+
+const supportedLangs: Langs[] = ["ts", "lua", "zinc", "wurst"];
+
 function printHelp(): void {
     Logger.log("Usage:");
-    Logger.log("xlsx-exporter <input> [output]");
+    Logger.log(`xlsx-exporter <${supportedLangs.join("|")}> <input> [output]`);
     Logger.log("");
     Logger.log("Examples:");
-    Logger.log("xlsx-exporter ./example/excel");
-    Logger.log("xlsx-exporter ./example/excel ./example/exported");
-    Logger.log("xlsx-exporter ./example/excel/UnitConfig.xlsx");
-    Logger.log("xlsx-exporter ./example/excel/UnitConfig.xlsx ./example/exported");
+    Logger.log("xlsx-exporter ts ./example/excel");
+    Logger.log("xlsx-exporter ts ./example/excel ./example/exported");
+    Logger.log("xlsx-exporter ts ./example/excel/UnitConfig.xlsx");
+    Logger.log("xlsx-exporter ts ./example/excel/UnitConfig.xlsx ./example/exported");
 }
 
 const args = process.argv.splice(2);
 
-if (args.length === 0) {
+const lang = args[0] as Langs;
+const input = args[1];
+const output = args[2];
+
+if (args.length < 2) {
     printHelp();
     process.exit();
 }
 
-if (!fs.existsSync(args[0])) {
+if (supportedLangs.indexOf(lang) === -1) {
+    Logger.error("Supported langs: " + supportedLangs.join(","));
+    process.exit();
+}
+
+if (!fs.existsSync(input)) {
     Logger.error("Input path does not exist.");
     process.exit();
 }
 
 const fileList: string[] = [];
 
-const inputStat = fs.statSync(args[0]);
+const inputStat = fs.statSync(input);
 if (inputStat.isDirectory()) {
-    fileList.push(...fs.readdirSync(args[0]).filter((e) => e.endsWith(".xlsx") && e.indexOf("~$") === -1).map((e) => path.join(args[0], e)));
+    fileList.push(...fs.readdirSync(input).filter((e) => e.endsWith(".xlsx") && e.indexOf("~$") === -1).map((e) => path.join(input, e)));
     if (fileList.length === 0) {
         Logger.error("Target directory has no xlsx file.");
         process.exit();
     }
 } else if (inputStat.isFile()) {
-    if (args[0].endsWith(".xlsx")) {
-        fileList.push(args[0]);
+    if (input.endsWith(".xlsx")) {
+        fileList.push(input);
     } else {
         Logger.error("Must specify an xlsx file.");
         process.exit();
@@ -50,14 +63,14 @@ if (inputStat.isDirectory()) {
 
 let outDir: string = path.dirname(fileList[0]);
 
-if (args.length > 1) {
-    if (!fs.existsSync(args[1])) {
+if (output !== undefined) {
+    if (!fs.existsSync(output)) {
         Logger.error("Output path does not exist.");
         process.exit();
     }
-    const outputStat = fs.statSync(args[1]);
+    const outputStat = fs.statSync(output);
     if (outputStat.isDirectory()) {
-        outDir = args[1];
+        outDir = output;
     } else {
         Logger.error("Output must be a directory.");
         process.exit();
@@ -66,8 +79,8 @@ if (args.length > 1) {
 
 for (const file of fileList) {
     const baseFN = path.basename(file, ".xlsx");
-    const wp = new WorkbookParser(xlsx.readFile(file), baseFN);
-    const outFp = path.join(outDir, baseFN + ".ts");
-    fs.writeFileSync(outFp, wp.toTs());
+    const wp = new WorkbookParser(lang, xlsx.readFile(file), baseFN);
+    const outFp = path.join(outDir, baseFN + wp.exporter.extension);
+    fs.writeFileSync(outFp, wp.toCode());
     Logger.success(outFp);
 }

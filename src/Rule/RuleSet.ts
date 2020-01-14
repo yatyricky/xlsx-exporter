@@ -32,7 +32,7 @@ export default class RuleSet extends ErrorReporter {
         }
         // rule self check
         for (const rule of this.rules) {
-            rule.execute();
+            rule.validate();
             this.error.push(...rule.getErrors());
         }
         // data check
@@ -46,4 +46,13 @@ export default class RuleSet extends ErrorReporter {
             this.error.push(`Type mismatch @${cell}`);
         }, rowStart, rowEnd);
     }
+
+    public execute(data: string[]): void {
+        for (const rule of this.rules) {
+            if (!rule.execute(data)) {
+                this.error.push(`${RuleType[rule.type]}`);
+            }
+        }
+    }
+
 }

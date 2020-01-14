@@ -47,3 +47,11 @@ export function ForeachCol(sheet: xlsx.WorkSheet, row: number, callback: (value:
         start++;
     }
 }
+
+export function GetColumnRange(sheet: xlsx.WorkSheet, col: number, rowStart: number, rowEnd: number): string[] {
+    const ret: string[] = [];
+    ForeachRow(sheet, col, (value: string, row: number, cell: string) => {
+        ret.push(value);
+    }, rowStart, rowEnd);
+    return ret;
+}

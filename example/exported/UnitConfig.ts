@@ -39,8 +39,8 @@ export interface IUnitConfigExtras {
     Another: string;
 }
 
-export const UnitConfigExtras: { [key: string]: IUnitConfigExtras } = {
-    ["unit_name"]: { Key: "unit_name", Valid: false, Flag: [], Another: "1" },
-    ["unit_type"]: { Key: "unit_type", Valid: true, Flag: ["1", "2", "3"], Another: "1" },
-    ["unit_scale"]: { Key: "unit_scale", Valid: true, Flag: ["a"], Another: "Something" },
-};
+export const UnitConfigExtras: IUnitConfigExtras[] = [
+    { Key: "unit_name", Valid: false, Flag: [], Another: "1" },
+    { Key: "unit_type", Valid: true, Flag: ["1", "2", "3"], Another: "1" },
+    { Key: "unit_scale", Valid: true, Flag: ["a"], Another: "Something" },
+];

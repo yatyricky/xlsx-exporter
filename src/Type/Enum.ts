@@ -72,4 +72,54 @@ export default class Enum implements IType<string> {
     public tsVal(strrep: string): string {
         return this.name + "." + strrep;
     }
+
+    public luaDef(): string {
+        let sb = `config.Enum${this.name} = {}\n`;
+        for (const e of this.items) {
+            sb += `config.Enum${this.name}.${e.name} = ${e.value}\n`;
+        }
+        return sb;
+    }
+
+    public luaName(): string {
+        return this.name;
+    }
+
+    public luaVal(value: string): string {
+        return "config.Enum" + this.name + "." + value;
+    }
+
+    public zincDef(): string {
+        let sb = `${Indent}public struct Enum${this.name} {\n`;
+        for (const e of this.items) {
+            sb += `${Indent}${Indent}static integer ${e.name} = ${e.value};\n`;
+        }
+        sb += `${Indent}}`;
+        return sb;
+    }
+
+    public zincName(): string {
+        return "integer";
+    }
+
+    public zincVal(value: string): string {
+        return "Enum" + this.name + "." + value;
+    }
+
+    public wurstDef(): string {
+        let sb = `enum ${this.name}\n`;
+        for (const e of this.items) {
+            sb += `${Indent}${e.name} = ${e.value}\n`;
+        }
+        return sb;
+    }
+
+    public wurstName(): string {
+        return this.name;
+    }
+
+    public wurstVal(value: string): string {
+        return "Enum" + this.name + "." + value;
+    }
+
 }

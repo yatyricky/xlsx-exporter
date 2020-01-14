@@ -8,11 +8,11 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${file}",
+            "program": "${workspaceFolder}/js/Main.js",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "runtimeArgs": ["example/excel", "example/exported"]
+            "args": ["ts", "example/excel", "example/exported"]
         }
     ]
 }

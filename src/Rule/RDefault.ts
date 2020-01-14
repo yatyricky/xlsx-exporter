@@ -17,7 +17,7 @@ export default class RDefault extends Rule {
         this.valueType = fieldType;
     }
 
-    public execute(): void {
+    public validate(): void {
         if (!this.valueType.match(this.defaultVal)) {
             this.error.push("Default value does not match field type");
         }

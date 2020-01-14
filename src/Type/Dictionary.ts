@@ -65,4 +65,41 @@ export default class Dictionary<K extends JSKeyType, V extends JSTypes> implemen
     public tsVal(value: { [key: string]: V }): string {
         return `{ ${Object.keys(value).map((key) => `[${this.kType.tsVal(key as K)}]: ${this.vType.tsVal(value[key])}`).join(", ")} }`;
     }
+
+    public luaDef(): string {
+        return "";
+    }
+
+    public luaName(): string {
+        return `table<${this.kType.luaName()}, ${this.vType.luaName()}>`;
+    }
+
+    public luaVal(value: { [key: string]: V }): string {
+        return `{ ${Object.keys(value).map((key) => `[${this.kType.tsVal(key as K)}] = ${this.vType.tsVal(value[key])}`).join(", ")} }`;
+    }
+
+    public zincDef(): string {
+        return "";
+    }
+
+    public zincName(): string {
+        return "";
+    }
+
+    public zincVal(value: { [key: string]: V }): string {
+        return "";
+    }
+
+    public wurstDef(): string {
+        return "";
+    }
+
+    public wurstName(): string {
+        return `HashMap<${this.kType.wurstName()}, ${this.vType.wurstName()}>`;
+    }
+
+    public wurstVal(value: { [key: string]: V }): string {
+        return "";
+    }
+
 }

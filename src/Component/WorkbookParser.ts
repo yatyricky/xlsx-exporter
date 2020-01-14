@@ -1,45 +1,73 @@
 import xlsx = require("xlsx");
 import Logger from "../Common/Logger";
 import { IMap, JSTypes } from "../Common/TypeDef";
-import { EncodeCell, ForeachCol, ForeachRow, SafeGet } from "../Common/Utils";
+import { EncodeCell, ForeachCol, ForeachRow, GetColumnRange, SafeGet } from "../Common/Utils";
+import { CreateExporter } from "../Exporter/ExporterFactory";
+import ILang from "../Exporter/Lang";
 import RDefault from "../Rule/RDefault";
 import { RuleType } from "../Rule/Rule";
 import { CreateRule } from "../Rule/RuleFactory";
 import RuleSet from "../Rule/RuleSet";
+import RUnique from "../Rule/RUnique";
+import Dictionary from "../Type/Dictionary";
 import Enum from "../Type/Enum";
-import { ICollection, TypeCategory } from "../Type/TypeBase";
+import List from "../Type/List";
+import IType, { ICollection, TypeCategory } from "../Type/TypeBase";
 import { CreateType } from "../Type/TypeFactory";
+import IField from "./Field";
 import WorksheetParser from "./WorkSheetParser";
 
+const reservedSheetNames = ["@Enum", "@Global"];
+
 export default class WorkbookParser {
+    public exporter: ILang;
     private wb: xlsx.WorkBook;
     private name: string;
+    private globals: Array<IField<JSTypes>>;
     private enums: IMap<Enum>;
     private sheets: WorksheetParser[];
     private dataSheetNames: string[];
 
-    public constructor(wb: xlsx.WorkBook, name: string) {
+    public constructor(lang: string, wb: xlsx.WorkBook, name: string) {
+        this.exporter = CreateExporter(lang);
         this.wb = wb;
         this.name = name;
         // init
         this.dataSheetNames = [];
         this.sheets = [];
         this.enums = {};
+        this.globals = [];
 
         this.cateAllNames();
         this.parseEnums();
+        this.parseGlobals();
         this.parseSheets();
     }
 
-    public toTs(): string {
-        let sb = "";
+    public toCode(): string {
+        const sb: string[] = [];
         const list: string[] = [];
+        if (this.exporter.head(this.name)) {
+            sb.push(this.exporter.head(this.name));
+        }
+        // enums
         for (const key in this.enums) {
             if (this.enums.hasOwnProperty(key)) {
-                list.push(this.enums[key].tsDef());
+                list.push(this.exporter.typeDefString(this.enums[key]));
             }
         }
-        sb += list.join("\n\n") + "\n";
+        if (list.length > 0) {
+            sb.push(list.join("\n\n"));
+        }
+        // globals
+        list.length = 0;
+        for (const e of this.globals) {
+            list.push(this.exporter.global(e));
+        }
+        if (list.length > 0) {
+            sb.push(list.join("\n"));
+        }
+        // data
         list.length = 0;
         for (let i = 0; i < this.sheets.length; i++) {
             const sheet = this.sheets[i];
@@ -50,26 +78,38 @@ export default class WorkbookParser {
                 name = `${this.name}${sheet.name}`;
             }
             const iName = "I" + name;
-            let configType: string;
+            this.enums[iName] = new Enum(iName);
+            let configType: IType<JSTypes>;
             const ifdr = sheet.getIndexFieldDefineRule();
             if (ifdr) {
-                configType = `{ [key: ${ifdr.define.type.tsName()}]: ${iName} }`;
+                configType = new Dictionary(ifdr.define.type as IType<string | number>, this.enums[iName]);
             } else {
-                configType = `${iName}[]`;
+                configType = new List(this.enums[iName]);
             }
             sheet.interfaceName = iName;
             let part = "";
-            part += sheet.tsDef() + "\n\n";
-            part += `export const ${name}: ${configType} = ${sheet.tsVal()};`;
+            part += this.exporter.typeDefString(sheet) + "\n\n";
+            part += this.exporter.sheet({
+                fDef: {
+                    type: configType,
+                    name,
+                },
+                value: this.exporter.valueString(sheet, {}),
+            }, sheet);
             list.push(part);
         }
-        sb += "\n" + list.join("\n\n") + "\n";
-        return sb;
+        if (list.length > 0) {
+            sb.push(list.join("\n\n"));
+        }
+        if (this.exporter.tail()) {
+            sb.push(this.exporter.tail());
+        }
+        return sb.join("\n\n") + "\n";
     }
 
     private cateAllNames(): void {
         for (const sheetName of this.wb.SheetNames) {
-            if (sheetName !== "@Enum") {
+            if (reservedSheetNames.indexOf(sheetName) === -1) {
                 this.dataSheetNames.push(sheetName);
             }
         }
@@ -85,13 +125,55 @@ export default class WorkbookParser {
                 this.enums[value] = new Enum(value);
             }
             const enumObj = this.enums[value];
-            enumObj.add(SafeGet(sheet, row, 1), SafeGet(sheet, row, 2));
+            const enumItemType = CreateType(SafeGet(sheet, row, 2), {});
+            const valueField = SafeGet(sheet, row, 3);
+            if (valueField.length === 0) {
+                enumObj.add(SafeGet(sheet, row, 1), "");
+            } else {
+                if (enumItemType === undefined) {
+                    enumObj.add(SafeGet(sheet, row, 1), valueField);
+                } else if (this.exporter.typeString(enumItemType) === "number") {
+                    enumObj.add(SafeGet(sheet, row, 1), enumItemType.valueOf(valueField).toString());
+                } else {
+                    Logger.warn("Enum value type must be int or int256");
+                    enumObj.add(SafeGet(sheet, row, 1), "");
+                }
+            }
+        }, 1);
+    }
+
+    private parseGlobals(): void {
+        const sheet = this.wb.Sheets["@Global"];
+        if (!sheet) {
+            return;
+        }
+        const names: string[] = [];
+        ForeachRow(sheet, 0, (value: string, row: number) => {
+            names.push(value);
+        }, 1);
+        const unique = new RUnique();
+        if (!unique.execute(names)) {
+            return Logger.duplicate(`${this.name}[@Global] Field names`);
+        }
+        ForeachRow(sheet, 0, (value: string, row: number, cell: string) => {
+            const typeName = SafeGet(sheet, row, 1) || "string";
+            const type = CreateType(typeName, this.enums);
+            if (type === undefined) {
+                return Logger.unknownType(`${this.name}[@Global] @ ${EncodeCell(row, 1)}`);
+            }
+            this.globals.push({
+                fDef: {
+                    type,
+                    name: value,
+                },
+                value: SafeGet(sheet, row, 2),
+            });
         }, 1);
     }
 
     private parseSheets(): void {
         for (const e of this.dataSheetNames) {
-            const sheetParser = new WorksheetParser(e);
+            const sheetParser = new WorksheetParser(this.exporter, e);
             const sheet = this.wb.Sheets[e];
             const dupCheckKey: IMap<TypeCategory> = {};
             const allRuleSets: RuleSet[] = [];
@@ -220,6 +302,14 @@ export default class WorkbookParser {
                 }
                 sheetParser.feed(newObj);
             }
+
+            for (const fdr of sheetParser.fieldDefineRules) {
+                fdr.ruleSet.execute(GetColumnRange(sheet, fdr.column, 4, rowEnd));
+                if (fdr.ruleSet.error.length > 0) {
+                    return Logger.error(`${this.name}[${e}] RuleSet failed column ${fdr.column}. Rules: ${fdr.ruleSet.getErrors().join(",")}`);
+                }
+            }
+
             this.sheets.push(sheetParser);
         }
     }

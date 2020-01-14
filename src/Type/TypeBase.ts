@@ -9,6 +9,18 @@ export default interface IType<T extends JSTypes> {
     tsDef(): string;
     tsName(): string;
     tsVal(value: T): string;
+
+    luaDef(): string;
+    luaName(): string;
+    luaVal(value: T): string;
+
+    zincDef(): string;
+    zincName(): string;
+    zincVal(value: T): string;
+
+    wurstDef(): string;
+    wurstName(): string;
+    wurstVal(value: T): string;
 }
 
 export interface ICollection extends IType<JSTypes> {

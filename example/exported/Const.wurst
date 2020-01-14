@@ -1,0 +1,8 @@
+package Const
+
+constant string ProjectName = "xlsx exporter"
+constant int BuildNumber = 10
+constant string array Authors = [ "Nef." ]
+constant string array Dependencies = [ "xlsx", "webpack", "typescript" ]
+
+

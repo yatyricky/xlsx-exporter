@@ -33,4 +33,47 @@ export default class Int256 implements IType<number> {
         return value.toString();
     }
 
+    public luaDef(): string {
+        return "";
+    }
+
+    public luaName(): string {
+        return "number";
+    }
+
+    public luaVal(value: number): string {
+        return value.toString();
+    }
+
+    public zincDef(): string {
+        return "";
+    }
+
+    public zincName(): string {
+        return "integer";
+    }
+
+    public zincVal(value: number): string {
+        const v4 = value % 256;
+        value = value >>> 8;
+        const v3 = value % 256;
+        value = value >>> 8;
+        const v2 = value % 256;
+        value = value >>> 8;
+        const v1 = value;
+        return `'${String.fromCharCode(v1, v2, v3, v4)}'`;
+    }
+
+    public wurstDef(): string {
+        return "";
+    }
+
+    public wurstName(): string {
+        return "int";
+    }
+
+    public wurstVal(value: number): string {
+        return this.zincVal(value);
+    }
+
 }

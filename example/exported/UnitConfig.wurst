@@ -1,0 +1,27 @@
+package UnitConfig
+
+enum CareerType
+    Tank = 1
+    Healer = 2
+    DPS = 4
+    Minion = 8
+    Boss = 16
+    Creep = 32
+
+
+enum AttributeType
+    None = 0
+    Strength = 1
+    Agility = 2
+    Intelligence = 3
+
+
+
+
+constant HashMap<int, IUnitConfig> UnitConfig = new HashMap<int, IUnitConfig>
+
+
+
+constant IUnitConfigExtras array UnitConfigExtras = new IUnitConfigExtras array
+
+

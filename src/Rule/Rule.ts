@@ -9,12 +9,22 @@ export enum RuleType {
 export default abstract class Rule extends ErrorReporter {
     public abstract type: RuleType;
     protected subRules: Rule[];
+
     constructor() {
         super();
         this.subRules = [];
     }
-    public execute(): void {
+
+    public validate(): void {
         // nothing to do
+    }
+
+    public execute(data: string[]): boolean {
+        let ret: boolean = true;
+        for (const rule of this.subRules) {
+            ret = ret && rule.execute(data);
+        }
+        return ret;
     }
 
     public overlapWith(other: Rule): boolean {

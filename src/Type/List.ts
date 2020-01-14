@@ -5,7 +5,7 @@ export default class List<T extends JSTypes> implements ICollection {
 
     public category: TypeCategory = TypeCategory.Collection;
 
-    private itemType: IType<T>;
+    public itemType: IType<T>;
 
     public constructor(itemType: IType<T>) {
         this.itemType = itemType;
@@ -40,6 +40,42 @@ export default class List<T extends JSTypes> implements ICollection {
 
     public tsVal(value: T[]): string {
         return `[${value.map((e) => this.itemType.tsVal(e)).join(", ")}]`;
+    }
+
+    public luaDef(): string {
+        return "";
+    }
+
+    public luaName(): string {
+        return this.itemType.luaName() + "[]";
+    }
+
+    public luaVal(value: T[]): string {
+        return `{ ${value.map((e) => this.itemType.tsVal(e)).join(", ")} }`;
+    }
+
+    public zincDef(): string {
+        return "";
+    }
+
+    public zincName(): string {
+        return this.itemType.zincName();
+    }
+
+    public zincVal(value: T[]): string {
+        return "";
+    }
+
+    public wurstDef(): string {
+        return "";
+    }
+
+    public wurstName(): string {
+        return this.itemType.wurstName() + " array";
+    }
+
+    public wurstVal(value: T[]): string {
+        return `[ ${value.map((e) => this.itemType.tsVal(e)).join(", ")} ]`;
     }
 
 }

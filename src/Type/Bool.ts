@@ -39,4 +39,53 @@ export default class Bool implements IType<boolean> {
             return "false";
         }
     }
+
+    public luaDef(): string {
+        return "";
+    }
+
+    public luaName(): string {
+        return "boolean";
+    }
+
+    public luaVal(value: boolean): string {
+        if (value) {
+            return "true";
+        } else {
+            return "false";
+        }
+    }
+
+    public zincDef(): string {
+        return "";
+    }
+
+    public zincName(): string {
+        return "boolean";
+    }
+
+    public zincVal(value: boolean): string {
+        if (value) {
+            return "true";
+        } else {
+            return "false";
+        }
+    }
+
+    public wurstDef(): string {
+        return "";
+    }
+
+    public wurstName(): string {
+        return "boolean";
+    }
+
+    public wurstVal(value: boolean): string {
+        if (value) {
+            return "true";
+        } else {
+            return "false";
+        }
+    }
+
 }
