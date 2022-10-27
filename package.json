@@ -21,7 +21,7 @@
   "homepage": "https://github.com/yatyricky/xlsx-exporter#readme",
   "dependencies": {
     "@types/node": "^13.1.2",
-    "xlsx": "^0.15.4"
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "webpack": "^4.41.5",
